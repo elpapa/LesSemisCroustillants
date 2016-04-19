@@ -20,6 +20,7 @@ public class ArticleProvider extends ContentProvider {
 
     static final int ARTICLE = 100;
     static final int ARTICLE_WITH_BARCODE = 101;
+    static final int STOCK = 200;
 
     private static final SQLiteQueryBuilder articleByBarcodeQueryBuilder;
 
@@ -34,7 +35,7 @@ public class ArticleProvider extends ContentProvider {
             ArticleContract.ArticleEntry.TABLE_NAME +
             "." + ArticleContract.ArticleEntry.COLUMN_BARCODE + " = ?";
 
-    private Cursor getrticleByBarcode(Uri uri, String[] projection, String sortOrder){
+    private Cursor getArticleByBarcode(Uri uri, String[] projection, String sortOrder){
         String barcode = ArticleContract.ArticleEntry.getBarcodeFromUri(uri);
 
         String[] selectionArgs;
@@ -58,6 +59,7 @@ public class ArticleProvider extends ContentProvider {
 
         matcher.addURI(authority, ArticleContract.PATH_ARTICLE, ARTICLE);
         matcher.addURI(authority, ArticleContract.PATH_ARTICLE + "/*", ARTICLE_WITH_BARCODE);
+        matcher.addURI(authority, ArticleContract.PATH_STOCK, STOCK);
 
         return matcher;
     }
@@ -77,11 +79,22 @@ public class ArticleProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)){
             case ARTICLE_WITH_BARCODE:
-                retCursor = getrticleByBarcode(uri, projection, sortOrder);
+                retCursor = getArticleByBarcode(uri, projection, sortOrder);
                 break;
             case ARTICLE:
                 retCursor = articleHelper.getReadableDatabase().query(
                         ArticleContract.ArticleEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case STOCK:
+                retCursor = articleHelper.getReadableDatabase().query(
+                        ArticleContract.StockEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -129,6 +142,13 @@ public class ArticleProvider extends ContentProvider {
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
+            case STOCK:
+                long stock_id = db.insert(ArticleContract.StockEntry.TABLE_NAME, null, values);
+                if ( stock_id > 0 )
+                    returnUri = ArticleContract.StockEntry.buildStockUri(stock_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -149,6 +169,10 @@ public class ArticleProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         ArticleContract.ArticleEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case STOCK:
+                rowsDeleted = db.delete(
+                        ArticleContract.StockEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -168,6 +192,10 @@ public class ArticleProvider extends ContentProvider {
             switch (match) {
                 case ARTICLE:
                     rowsUpdated = db.update(ArticleContract.ArticleEntry.TABLE_NAME, values, selection,
+                            selectionArgs);
+                    break;
+                case STOCK:
+                    rowsUpdated = db.update(ArticleContract.StockEntry.TABLE_NAME, values, selection,
                             selectionArgs);
                     break;
                 default:

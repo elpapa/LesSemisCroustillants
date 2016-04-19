@@ -13,7 +13,7 @@ public class ArticleContract {
     public static final String CONTENT_AUTHORITY = "edu.imag.miage.lessemiscroustillants.app";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_ARTICLE = "article";
-
+    public static final String PATH_STOCK = "stock";
 
     public static final class ArticleEntry implements BaseColumns{
 
@@ -49,9 +49,17 @@ public class ArticleContract {
     }
 
     public static final class StockEntry implements BaseColumns{
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_STOCK).build();
+
         public static final String TABLE_NAME = "stock";
 
         public static final String COLUMN_STOCK_NAME = "stock_name";
+
+        public static Uri buildStockUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
 
     public static final class ProductEntry implements BaseColumns{

@@ -12,5 +12,7 @@
     <string name="mandatory_message">Le champs ne peut pas être vide</string>
     <string name="no_article">Ce codebarre ne correspond à aucun article</string>
     <string name="add_success">L\'article a bien été ajouté</string>
+    <string name="add_stock_success">L\'emplacement a bien été ajouté</string>
     <string name="title_activity_stock">StockActivity</string>
+    <string name="add_stock_label">Entrez un nouvel emplacement</string>
 </resources>

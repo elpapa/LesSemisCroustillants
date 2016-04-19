@@ -4,8 +4,9 @@
     <group android:checkableBehavior="single"
         android:id="@+id/stock_list">
         <item
-            android:title="frigo"
-            android:id="@+id/Frigo_stock"/>
+            android:title="Ajouter"
+            android:id="@+id/add_stock"
+            android:icon="@android:drawable/ic_input_add"/>
     </group>
 
     <item android:title="Communicate">

@@ -2,6 +2,7 @@ package edu.imag.miage.lessemiscroustillants;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import edu.imag.miage.lessemiscroustillants.data.ArticleContract;
 import edu.imag.miage.lessemiscroustillants.model.ArticleContent;
 
 import java.util.List;
@@ -70,6 +72,18 @@ public class ArticleListActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
+        Menu menu = navigationView.getMenu();
+        Cursor mCursor = MyApplication.getAppContext().getContentResolver().query(
+                ArticleContract.StockEntry.CONTENT_URI,
+                new String[]{ArticleContract.StockEntry.COLUMN_STOCK_NAME},
+                null,null,null,null);
+
+        while(mCursor.moveToNext()){
+            menu.add(mCursor.getString(0));
+        }
+        mCursor.close();
+
+
         navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -97,9 +111,16 @@ public class ArticleListActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        Intent addIntent = new Intent(ArticleListActivity.this, StockActivity.class)
-                .putExtra("stock_id", id);
-        startActivity(addIntent);
+        if (id == R.id.add_stock){
+            Intent intent = new Intent(ArticleListActivity.this, AddStockActivity.class);
+            startActivity(intent);
+
+        } else {
+            Intent addIntent = new Intent(ArticleListActivity.this, StockActivity.class)
+                    .putExtra("stock_id", id);
+            startActivity(addIntent);
+        }
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

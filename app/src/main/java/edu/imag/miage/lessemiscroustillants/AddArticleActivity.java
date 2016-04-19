@@ -16,7 +16,7 @@ public class AddArticleActivity extends AppCompatActivity {
 
         final EditText barcode = (EditText) findViewById(R.id.add_ref_codebarre);
 
-        Button button = (Button) findViewById(R.id.activity_add_button);
+        final Button button = (Button) findViewById(R.id.activity_add_button);
         button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -27,6 +27,8 @@ public class AddArticleActivity extends AppCompatActivity {
                 }
             }
         });
+
+
     }
 
     private void addArticle(String barcode) {

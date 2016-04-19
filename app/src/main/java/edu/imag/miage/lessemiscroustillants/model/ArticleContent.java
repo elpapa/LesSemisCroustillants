@@ -34,26 +34,27 @@ public class ArticleContent {
 
     public static final Map<String, ArticleItem> ITEM_MAP = new HashMap<String, ArticleItem>();
 
-    private static final int COUNT = 25;
-
-    /*static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createArticleItem(i));
-        }
-    }*/
+    public static final int COL_ARTICLE_ID = 0;
+    public static final int COL_ARTICLE_NAME = 1;
+    public static final int COL_GENERIC_NAME = 2;
+    public static final int COL_BRAND = 3;
+    public static final int COL_WEIGHT = 4;
+    public static final int COL_BARCODE = 5;
 
     static {
 
         Cursor mCursor = MyApplication.getAppContext().getContentResolver().query(
                 ArticleEntry.CONTENT_URI,
-                new String[]{ArticleEntry._ID ,ArticleEntry.COLUMN_ARTICLE_NAME},
-                null,null,null,null);
+                null,null,null,null,null);
 
         while(mCursor.moveToNext()){
             addItem(createArticleItem(
-                    mCursor.getString(0),
-                    mCursor.getString(1)
+                    mCursor.getString(COL_ARTICLE_ID),
+                    mCursor.getString(COL_ARTICLE_NAME),
+                    mCursor.getString(COL_GENERIC_NAME),
+                    mCursor.getString(COL_BRAND),
+                    mCursor.getString(COL_WEIGHT),
+                    String.valueOf(mCursor.getLong(COL_BARCODE))
             ));
         }
         mCursor.close();
@@ -64,21 +65,23 @@ public class ArticleContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static ArticleItem createArticleItem(String id, String article_name) {
-        return new ArticleItem(id, article_name, makeDetails(Integer.parseInt(id)));
+    private static ArticleItem createArticleItem(String id, String article_name, String generic_name, String brand, String weight, String barcode) {
+        return new ArticleItem(id, article_name, makeDetails(article_name,generic_name,brand,weight,barcode));
     }
 
-    private static String makeDetails(int position) {
+    private static String makeDetails(String article_name, String generic_name, String brand, String weight, String barcode) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
+        builder.append("Détails pour ").append(article_name).append("\n");
+        builder.append("\nNom générique : ").append(generic_name);
+        builder.append("\nMarque : ").append(brand);
+        builder.append("\nPoids : ").append(weight);
+        builder.append("\nCodeBarre : ").append(barcode);
+
         return builder.toString();
     }
 
     /**
-     * A dummy item representing a piece of content.
+     * A article item representing a piece of content.
      */
     public static class ArticleItem {
         public final String id;
