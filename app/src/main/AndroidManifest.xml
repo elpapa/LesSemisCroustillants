@@ -31,16 +31,19 @@
                 android:value="edu.imag.miage.lessemiscroustillants.ArticleListActivity" />
         </activity>
         <activity
-            android:name=".AddActivity"
+            android:name=".AddArticleActivity"
             android:label="Ajouter un Article"
-            android:parentActivityName=".ArticleListActivity">
-
-        </activity>
+            android:parentActivityName=".ArticleListActivity" />
 
         <provider
             android:name=".data.ArticleProvider"
             android:authorities="edu.imag.miage.lessemiscroustillants.app" />
 
+        <activity
+            android:name=".StockActivity"
+            android:label="@string/title_activity_stock"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".AddProductActivity"></activity>
     </application>
 
 </manifest>

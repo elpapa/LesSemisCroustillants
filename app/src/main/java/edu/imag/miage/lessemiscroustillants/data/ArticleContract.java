@@ -51,11 +51,16 @@ public class ArticleContract {
     public static final class StockEntry implements BaseColumns{
         public static final String TABLE_NAME = "stock";
 
-        public static final String COLUMN_SOCK_NAME = "stock_name";
+        public static final String COLUMN_STOCK_NAME = "stock_name";
     }
 
     public static final class ProductEntry implements BaseColumns{
         public static final String TABLE_NAME = "product";
+
+        public static final String COLUMN_ARTICLE_KEY = "article_id";
+        public static final String COLUMN_STOCK_KEY = "stock_id";
+        public static final String COLUMN_PRODUCT_QUANTITE = "quantite";
+
     }
 
 

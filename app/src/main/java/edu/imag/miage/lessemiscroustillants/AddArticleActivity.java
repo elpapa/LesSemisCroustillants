@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class AddActivity extends AppCompatActivity {
+public class AddArticleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (barcode.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(AddActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddArticleActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
                 } else {
                     addArticle(barcode.getText().toString());
                 }

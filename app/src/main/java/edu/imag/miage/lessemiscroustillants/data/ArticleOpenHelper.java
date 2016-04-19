@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract.ArticleEntry;
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract.StockEntry;
+import edu.imag.miage.lessemiscroustillants.data.ArticleContract.ProductEntry;
 
 public class ArticleOpenHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "article.db";
@@ -32,12 +33,27 @@ public class ArticleOpenHelper extends SQLiteOpenHelper {
                 ArticleEntry.COLUMN_ARTICLE_NAME + ") ON CONFLICT REPLACE);";
 
 
-       /* final String SQL_CREATE_STOCK_TABLE = "CREATE TABLE" + StockEntry.TABLE_NAME + " (" +
+        final String SQL_CREATE_STOCK_TABLE = "CREATE TABLE " + StockEntry.TABLE_NAME + " (" +
                 StockEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                StockEntry.COLUMN_SOCK_NAME + "TEXT NOT NULL);";*/
+                StockEntry.COLUMN_STOCK_NAME + " TEXT NOT NULL);";
+
+        final String SQL_CREATE_PRODUCT_TABLE = "CREATE TABLE " + ProductEntry.TABLE_NAME + " (" +
+                ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ProductEntry.COLUMN_ARTICLE_KEY + " INTEGER NOT NULL," +
+                ProductEntry.COLUMN_STOCK_KEY + " INTEGER NOT NULL," +
+                ProductEntry.COLUMN_PRODUCT_QUANTITE + " TEXT NOT NULL," +
+
+                " FOREIGN KEY (" + ProductEntry.COLUMN_ARTICLE_KEY + ") REFERENCES " +
+                ArticleEntry.TABLE_NAME + " (" + ArticleEntry._ID + "), " +
+
+                " FOREIGN KEY (" + ProductEntry.COLUMN_STOCK_KEY + ") REFERENCES " +
+               StockEntry.TABLE_NAME + " (" + StockEntry._ID + "));";
 
         db.execSQL(SQL_CREATE_ARTICLE_TABLE);
-        //db.execSQL(SQL_CREATE_STOCK_TABLE);
+        db.execSQL(SQL_CREATE_STOCK_TABLE);
+        db.execSQL(SQL_CREATE_PRODUCT_TABLE);
+
+        //db.execSQL("INSERT INTO " + StockEntry.TABLE_NAME + " (" + StockEntry.COLUMN_STOCK_NAME + ") VALUES (Frigo);");
 
 
     }
@@ -45,7 +61,9 @@ public class ArticleOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (newVersion > oldVersion) {
+            db.execSQL("DROP TABLE IF EXIST " + ProductEntry.TABLE_NAME);
             db.execSQL("DROP TABLE IF EXIST " + ArticleEntry.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXIST " + StockEntry.TABLE_NAME);
             onCreate(db);
         }
     }

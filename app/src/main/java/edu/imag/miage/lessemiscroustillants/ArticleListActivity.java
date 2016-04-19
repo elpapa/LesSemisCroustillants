@@ -1,14 +1,7 @@
 package edu.imag.miage.lessemiscroustillants;
 
-import android.annotation.TargetApi;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,16 +13,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import edu.imag.miage.lessemiscroustillants.data.ArticleContract.ArticleEntry;
 import edu.imag.miage.lessemiscroustillants.model.ArticleContent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +55,7 @@ public class ArticleListActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addIntent = new Intent(ArticleListActivity.this, AddActivity.class);
+                Intent addIntent = new Intent(ArticleListActivity.this, AddArticleActivity.class);
                 startActivity(addIntent);
             }
         });
@@ -77,9 +69,9 @@ public class ArticleListActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
-        }
+        assert navigationView != null;
+        navigationView.setNavigationItemSelectedListener(this);
+
 
         View recyclerView = findViewById(R.id.article_list);
         assert recyclerView != null;
@@ -105,28 +97,16 @@ public class ArticleListActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        Intent addIntent = new Intent(ArticleListActivity.this, StockActivity.class)
+                .putExtra("stock_id", id);
+        startActivity(addIntent);
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
