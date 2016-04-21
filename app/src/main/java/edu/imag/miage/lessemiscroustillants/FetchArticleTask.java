@@ -30,7 +30,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
     private final String LOG_TAG = FetchArticleTask.class.getSimpleName();
 
     private final Context context;
-   // private ArrayAdapter<String> articleAdapter;
+    // private ArrayAdapter<String> articleAdapter;
 
     public FetchArticleTask(android.content.Context context) {
         this.context = context;
@@ -41,7 +41,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
     String[] convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
         String[] resultStrs = new String[cvv.size()];
 
-        for ( int i = 0; i < cvv.size(); i++ ) {
+        for (int i = 0; i < cvv.size(); i++) {
             ContentValues articleValues = cvv.elementAt(i);
             resultStrs[i] = articleValues.getAsString(ArticleContract.ArticleEntry.COLUMN_ARTICLE_NAME)
                     .concat(" " + articleValues.getAsString(ArticleContract.ArticleEntry.COLUMN_BARCODE));
@@ -59,11 +59,20 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         final String OWN_BARCODE = "code";
 
         final String OWN_PRODUCT = "product";
+        final String OWN_STATUS = "status";
+
+
 
         JSONObject articleJson = new JSONObject(articleJsonStr);
+
+        Log.d("JsonObject : ", articleJson.toString());
+
+        if(articleJson.getInt(OWN_STATUS) == 0){
+            return null;
+        }
         JSONObject articleObject = articleJson.getJSONObject(OWN_PRODUCT);
 
-       // Vector<ContentValues> cVVector = new Vector<>(articleObject.length());
+        // Vector<ContentValues> cVVector = new Vector<>(articleObject.length());
 
         String articleName;
         String genericName;
@@ -78,7 +87,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         weight = articleObject.getString(OWN_WEIGHT);
         barcode = articleObject.getLong(OWN_BARCODE);
 
-        addArticle(articleName,genericName,brand,barcode,weight);
+        addArticle(articleName, genericName, brand, barcode, weight);
 
         /*ContentValues articleValues = new ContentValues();
 
@@ -101,7 +110,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         return articleName;
     }
 
-    long addArticle(String article_name, String generic_name, String brand, long barcode, String weight){
+    long addArticle(String article_name, String generic_name, String brand, long barcode, String weight) {
         long articleId;
 
         Cursor articleCursor = context.getContentResolver().query(
@@ -167,6 +176,8 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
 
             URL url = new URL(builtUri.toString());
 
+            Log.d("Url openFood : ", url.toString());
+
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -193,6 +204,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
                 return null;
             }
             articleJsonStr = buffer.toString();
+            Log.d("JsonStr : ", articleJsonStr);
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
@@ -224,13 +236,12 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String articleStr) {
-        if (articleStr != null ) {
+        if (articleStr != null) {
             Toast.makeText(context, R.string.add_success, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(context, R.string.no_article, Toast.LENGTH_LONG).show();
-
         }
-            // New data is back from the server.  Hooray!
+
     }
 }
 

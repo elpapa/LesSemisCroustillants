@@ -57,7 +57,7 @@ public class ArticleListActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addIntent = new Intent(ArticleListActivity.this, AddArticleActivity.class);
+                Intent addIntent = new Intent(ArticleListActivity.this,AddArticleActivity.class);
                 startActivity(addIntent);
             }
         });
@@ -99,6 +99,7 @@ public class ArticleListActivity extends AppCompatActivity
             mTwoPane = true;
         }
     }
+    
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
 
@@ -110,14 +111,17 @@ public class ArticleListActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        String name = item.getTitle().toString();
 
-        if (id == R.id.add_stock){
+        if (id == R.id.add_stock) {
             Intent intent = new Intent(ArticleListActivity.this, AddStockActivity.class);
             startActivity(intent);
-
+        } else if (id == R.id.dbm){
+            Intent dbmanager = new Intent(ArticleListActivity.this,AndroidDatabaseManager.class);
+            startActivity(dbmanager);
         } else {
-            Intent addIntent = new Intent(ArticleListActivity.this, StockActivity.class)
-                    .putExtra("stock_id", id);
+            Intent addIntent = new Intent(ArticleListActivity.this, StockListProductActivity.class)
+                    .putExtra("stock_name", name);
             startActivity(addIntent);
         }
 
@@ -150,6 +154,7 @@ public class ArticleListActivity extends AppCompatActivity
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).id);
             holder.mContentView.setText(mValues.get(position).content);
+            holder.mQuantiteView.setText(mValues.get(position).quantite);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -182,6 +187,7 @@ public class ArticleListActivity extends AppCompatActivity
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
+            public final TextView mQuantiteView;
             public ArticleContent.ArticleItem mItem;
 
             public ViewHolder(View view) {
@@ -189,6 +195,7 @@ public class ArticleListActivity extends AppCompatActivity
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
+                mQuantiteView = (TextView) view.findViewById(R.id.quantite);
             }
 
             @Override

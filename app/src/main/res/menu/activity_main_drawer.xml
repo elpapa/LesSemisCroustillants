@@ -4,6 +4,13 @@
     <group android:checkableBehavior="single"
         android:id="@+id/stock_list">
         <item
+            android:id="@+id/stock_general"
+            android:title="Stock global"/>
+        <item
+            android:id="@+id/dbm"
+            android:title="Accès DBM"/>
+
+        <item
             android:title="Ajouter"
             android:id="@+id/add_stock"
             android:icon="@android:drawable/ic_input_add"/>
