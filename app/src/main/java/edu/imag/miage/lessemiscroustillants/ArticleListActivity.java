@@ -99,7 +99,7 @@ public class ArticleListActivity extends AppCompatActivity
             mTwoPane = true;
         }
     }
-    
+
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
 
