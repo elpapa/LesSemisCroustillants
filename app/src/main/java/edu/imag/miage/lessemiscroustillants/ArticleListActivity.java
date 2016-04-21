@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import edu.imag.miage.lessemiscroustillants.com.google.zxing.integration.android.IntentIntegrator;
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract;
 import edu.imag.miage.lessemiscroustillants.model.ArticleContent;
 
@@ -59,6 +60,7 @@ public class ArticleListActivity extends AppCompatActivity
             public void onClick(View view) {
                 Intent addIntent = new Intent(ArticleListActivity.this,AddArticleActivity.class);
                 startActivity(addIntent);
+
             }
         });
 
