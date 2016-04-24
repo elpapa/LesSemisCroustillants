@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract;
 
@@ -38,18 +39,6 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
 
     private boolean DEBUG = true;
 
-    String[] convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
-        String[] resultStrs = new String[cvv.size()];
-
-        for (int i = 0; i < cvv.size(); i++) {
-            ContentValues articleValues = cvv.elementAt(i);
-            resultStrs[i] = articleValues.getAsString(ArticleContract.ArticleEntry.COLUMN_ARTICLE_NAME)
-                    .concat(" " + articleValues.getAsString(ArticleContract.ArticleEntry.COLUMN_BARCODE));
-        }
-
-        return resultStrs;
-    }
-
     private String getArticleFromJson(String articleJsonStr) throws JSONException {
 
         final String OWN_G_NAME = "generic_name";
@@ -57,6 +46,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         final String OWN_BRAND = "brands";
         final String OWN_WEIGHT = "quantity";
         final String OWN_BARCODE = "code";
+        final String OWN_IMAGE = "image_thumb_url";
 
         final String OWN_PRODUCT = "product";
         final String OWN_STATUS = "status";
@@ -79,6 +69,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         String brand;
         String weight;
         long barcode;
+        String url_thumb;
 
 
         articleName = articleObject.getString(OWN_A_NAME);
@@ -86,8 +77,9 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         brand = articleObject.getString(OWN_BRAND);
         weight = articleObject.getString(OWN_WEIGHT);
         barcode = articleObject.getLong(OWN_BARCODE);
+        url_thumb = articleObject.getString(OWN_IMAGE);
 
-        addArticle(articleName, genericName, brand, barcode, weight);
+        addArticle(articleName, genericName, brand, barcode, weight, url_thumb);
 
         /*ContentValues articleValues = new ContentValues();
 
@@ -110,7 +102,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
         return articleName;
     }
 
-    long addArticle(String article_name, String generic_name, String brand, long barcode, String weight) {
+    long addArticle(String article_name, String generic_name, String brand, long barcode, String weight, String url_thumb) {
         long articleId;
 
         Cursor articleCursor = context.getContentResolver().query(
@@ -129,6 +121,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
             //
             //
         } else {
+
             ContentValues articleValues = new ContentValues();
 
             // Then add the data, along with the corresponding name of the data type,
@@ -138,6 +131,7 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
             articleValues.put(ArticleContract.ArticleEntry.COLUMN_GENERIC_NAME, generic_name);
             articleValues.put(ArticleContract.ArticleEntry.COLUMN_BRAND, brand);
             articleValues.put(ArticleContract.ArticleEntry.COLUMN_BARCODE, barcode);
+            articleValues.put(ArticleContract.ArticleEntry.COLUMN_IMAGE, url_thumb);
 
             // Finally, insert location data into the database.
             Uri insertedUri = context.getContentResolver().insert(
@@ -175,8 +169,6 @@ public class FetchArticleTask extends AsyncTask<String, Void, String> {
             Uri builtUri = Uri.parse(ARTICLE_BASE_URL).buildUpon().appendPath(barcode).build();
 
             URL url = new URL(builtUri.toString());
-
-            Log.d("Url openFood : ", url.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");

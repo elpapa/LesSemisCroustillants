@@ -36,6 +36,7 @@ public class ArticleContract {
         public static final String COLUMN_WEIGHT = "weight";
         public static final String COLUMN_BARCODE = "barcode";
         //public static final String COLUMN_INGREDIENTS = "ingredients";
+        public static final String COLUMN_IMAGE = "image";
 
         public static Uri buildArticleUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

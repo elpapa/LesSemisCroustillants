@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract;
 
@@ -29,12 +30,23 @@ public class AddProductActivity extends AppCompatActivity {
         final EditText stock_name = (EditText) findViewById(R.id.add_name_stock);
         final DatePicker date_limite = (DatePicker) findViewById(R.id.add_date_limit_product);
 
+
+        String year = String.valueOf(date_limite.getYear());
+        String month = String.valueOf(date_limite.getMonth()+1);
+        if(month.length() < 2){
+            month = '0' + month;
+        }
+        String day = String.valueOf(date_limite.getDayOfMonth());
+        if(day.length() < 2){
+           day = '0' + day;
+        }
+
+        final String date_product = day + "/" + month + "/" + year;
+
         final Button button = (Button) findViewById(R.id.activity_add_product_button);
 
         Intent intent = getIntent();
         final String articleName = intent.getStringExtra("name_article");
-
-        Log.d("AddProductActivity : ", articleName);
 
         assert button != null;
         button.setOnClickListener(new View.OnClickListener() {
@@ -45,10 +57,10 @@ public class AddProductActivity extends AppCompatActivity {
                     Toast.makeText(AddProductActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
                 } else if (stock_name.getText().toString().trim().isEmpty()) {
                     Toast.makeText(AddProductActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
-                } else if (date_limite.toString().isEmpty()) {
+                } else if (date_product.toString().isEmpty()) {
                     Toast.makeText(AddProductActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
                 } else {
-                    idProductInserted = addProduct(articleName, quantite.getText().toString(), date_limite.getMaxDate(), stock_name.getText().toString());
+                    idProductInserted = addProduct(articleName, quantite.getText().toString(), date_product, stock_name.getText().toString());
 
                     if (idProductInserted != -1) {
                         Toast.makeText(MyApplication.getAppContext(), R.string.add_product_success, Toast.LENGTH_LONG).show();
@@ -60,7 +72,7 @@ public class AddProductActivity extends AppCompatActivity {
         });
     }
 
-    private long addProduct(String articleName, String quantite, long date_limite, String stock_name) {
+    private long addProduct(String articleName, String quantite, String date_limite, String stock_name) {
 
         long idProductUri = -1;
 
@@ -76,7 +88,7 @@ public class AddProductActivity extends AppCompatActivity {
         String articleId = null;
         String stockId = null;
         long idProduct = -1;
-        long dateLimiteProduct = -1;
+        String dateLimiteProduct = null;
         int quantiteProduct = -1;
 
         if(idArticleCursor.moveToFirst()){
@@ -93,7 +105,7 @@ public class AddProductActivity extends AppCompatActivity {
             int stockIdIndex = idStockCursor.getColumnIndex(ArticleContract.StockEntry._ID);
             stockId = idStockCursor.getString(stockIdIndex);
             Log.d("AddProduct : ", "stockId --> " +stockId);
-        }
+        } else { return -1; }
         idStockCursor.close();
 
 
@@ -114,7 +126,7 @@ public class AddProductActivity extends AppCompatActivity {
             Log.d("AddProduct : ", "idProduct : " + idProduct);
 
             int dateProductIndex = idProductCursor.getColumnIndex(ArticleContract.ProductEntry.COLUMN_PRODUCT_DATE_LIMITE);
-            dateLimiteProduct = idProductCursor.getLong(dateProductIndex);
+            dateLimiteProduct = idProductCursor.getString(dateProductIndex);
 
             int quantiteProductIndex = idProductCursor.getColumnIndex(ArticleContract.ProductEntry.COLUMN_PRODUCT_QUANTITE);
             quantiteProduct = idProductCursor.getInt(quantiteProductIndex);
@@ -122,8 +134,7 @@ public class AddProductActivity extends AppCompatActivity {
         idProductCursor.close();
 
 
-            if (date_limite == dateLimiteProduct) {
-                Log.d("AddProduct : ", "update product");
+            if (date_limite.equals(dateLimiteProduct)) {
 
                 ContentValues contentValues = new ContentValues();
 

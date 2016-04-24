@@ -1,8 +1,10 @@
 package edu.imag.miage.lessemiscroustillants;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -18,14 +20,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-import edu.imag.miage.lessemiscroustillants.com.google.zxing.integration.android.IntentIntegrator;
 import edu.imag.miage.lessemiscroustillants.data.ArticleContract;
 import edu.imag.miage.lessemiscroustillants.model.ArticleContent;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * An activity representing a list of Articles. This activity
@@ -88,7 +93,6 @@ public class ArticleListActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-
         View recyclerView = findViewById(R.id.article_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -100,12 +104,6 @@ public class ArticleListActivity extends AppCompatActivity
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-    }
-
-
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ArticleContent.ITEMS));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -135,6 +133,43 @@ public class ArticleListActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if(id == R.id.action_settings){
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if ( id == R.id.filter){
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Filtrer les résultats", Toast.LENGTH_SHORT);
+            toast.show();
+        } else if(id == R.id.search_article){
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Rechercher un produit", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        return super.onOptionsItemSelected(item);
+
+
+
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+
+
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ArticleContent.ITEMS));
+    }
+
+
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -152,11 +187,60 @@ public class ArticleListActivity extends AppCompatActivity
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).id);
             holder.mContentView.setText(mValues.get(position).content);
             holder.mQuantiteView.setText(mValues.get(position).quantite);
+
+            FetchImageArticleTask fetchImageArticleTask = new FetchImageArticleTask();
+            fetchImageArticleTask.execute(mValues.get(position).url_image);
+            Bitmap bitmap = null;
+            try {
+                bitmap = fetchImageArticleTask.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            holder.mImageView.setImageBitmap(bitmap);
+
+            holder.mImageButtonAdd.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    int quantite = Integer.parseInt(mValues.get(position).quantite);
+                    quantite ++;
+
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(ArticleContract.ProductEntry.COLUMN_PRODUCT_QUANTITE,quantite);
+
+                    int updated = getApplicationContext().getContentResolver().update(
+                            ArticleContract.ProductEntry.CONTENT_URI,
+                            contentValues,
+                            ArticleContract.ProductEntry.TABLE_NAME + "." + ArticleContract.ProductEntry._ID + " = ?",
+                            new String[]{mValues.get(position).id}
+                    );
+
+                    if(updated > 0){
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "Ajout d\'un produit", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+
+                }
+            });
+
+            holder.mImageButtonDelete.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Supprimer un produit", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -178,6 +262,8 @@ public class ArticleListActivity extends AppCompatActivity
                     }
                 }
             });
+
+
         }
 
         @Override
@@ -190,6 +276,9 @@ public class ArticleListActivity extends AppCompatActivity
             public final TextView mIdView;
             public final TextView mContentView;
             public final TextView mQuantiteView;
+            public final ImageView mImageView;
+            public final ImageButton mImageButtonDelete;
+            public final ImageButton mImageButtonAdd;
             public ArticleContent.ArticleItem mItem;
 
             public ViewHolder(View view) {
@@ -198,6 +287,9 @@ public class ArticleListActivity extends AppCompatActivity
                 mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
                 mQuantiteView = (TextView) view.findViewById(R.id.quantite);
+                mImageView = (ImageView) view.findViewById(R.id.image);
+                mImageButtonDelete = (ImageButton) view.findViewById(R.id.delete_article);
+                mImageButtonAdd = (ImageButton) view.findViewById(R.id.add_to_stock);
             }
 
             @Override
@@ -206,4 +298,5 @@ public class ArticleListActivity extends AppCompatActivity
             }
         }
     }
+
 }

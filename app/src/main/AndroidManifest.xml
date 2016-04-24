@@ -42,17 +42,21 @@
         <activity
             android:name=".StockListProductActivity"
             android:label="@string/title_activity_stock"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ArticleListActivity"/>
-
-        <activity android:name=".AddProductActivity"
-            android:parentActivityName=".ArticleListActivity"/>
-
-        <activity android:name=".AddStockActivity"
-            android:parentActivityName=".ArticleListActivity"/>
-
-        <activity android:name=".AndroidDatabaseManager"
-            android:theme="@style/Theme.AppCompat.Light"/>
+            android:parentActivityName=".ArticleListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddProductActivity"
+            android:parentActivityName=".ArticleListActivity" />
+        <activity
+            android:name=".AddStockActivity"
+            android:parentActivityName=".ArticleListActivity" />
+        <activity
+            android:name=".AndroidDatabaseManager"
+            android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".ArticleListActivity" />
     </application>
 
 </manifest>

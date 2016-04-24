@@ -34,6 +34,7 @@ public class ArticleOpenHelper extends SQLiteOpenHelper {
                 ArticleEntry.COLUMN_WEIGHT + " TEXT NOT NULL," +
                 //ArticleEntry.COLUMN_INGREDIENTS + " TEXT NOT NULL," +
                 ArticleEntry.COLUMN_BARCODE + " LONG NOT NULL," +
+                ArticleEntry.COLUMN_IMAGE + " TEXT," +
 
                 " UNIQUE (" + ArticleEntry.COLUMN_BRAND + ", " +
                 ArticleEntry.COLUMN_ARTICLE_NAME + ") ON CONFLICT REPLACE);";
@@ -48,7 +49,7 @@ public class ArticleOpenHelper extends SQLiteOpenHelper {
                 ProductEntry.COLUMN_ARTICLE_KEY + " INTEGER NOT NULL," +
                 ProductEntry.COLUMN_STOCK_KEY + " INTEGER NOT NULL," +
                 ProductEntry.COLUMN_PRODUCT_QUANTITE + " INTEGER NOT NULL," +
-                ProductEntry.COLUMN_PRODUCT_DATE_LIMITE + " NUMERIC NOT NULL," +
+                ProductEntry.COLUMN_PRODUCT_DATE_LIMITE + " TEXT NOT NULL," +
 
                 " FOREIGN KEY (" + ProductEntry.COLUMN_ARTICLE_KEY + ") REFERENCES " +
                 ArticleEntry.TABLE_NAME + " (" + ArticleEntry._ID + "), " +

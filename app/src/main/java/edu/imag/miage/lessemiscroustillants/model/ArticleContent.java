@@ -24,7 +24,6 @@ import edu.imag.miage.lessemiscroustillants.data.ArticleContract.ArticleEntry;
  * <p/>
  */
 public class ArticleContent {
-
     /**
      * An array of article items.
      */
@@ -46,7 +45,8 @@ public class ArticleContent {
     public static final int COL_BRAND = 8;
     public static final int COL_WEIGHT = 9;
     public static final int COL_BARCODE = 10;
-    public static final int COL_STOCK_NAME = 12;
+    public static final int COL_IMAGE = 11;
+    public static final int COL_STOCK_NAME = 13;
 
     public static final int I_COL_PRODUCT_ID = 0;
     public static final int I_COL_ARTICLE_ID = 1;
@@ -58,17 +58,21 @@ public class ArticleContent {
     public static final int I_COL_BRAND = 7;
     public static final int I_COL_WEIGHT = 8;
     public static final int I_COL_BARCODE = 9;
-    public static final int I_COL_STOCK_NAME = 10;
+    public static final int I_COL_IMAGE = 10;
+    public static final int I_COL_STOCK_NAME = 11;
 
     static {
         List<String> item = new ArrayList<>();
         Cursor mCursor = MyApplication.getAppContext().getContentResolver().query(
                 ArticleContract.ProductEntry.CONTENT_URI,
                 null,null,null,null,null);
-int i=0;
+        String[] columnName = mCursor.getColumnNames();
+        for(int i=0 ; i<columnName.length ; i++){
+            Log.d("columnName : ", "-"+i+" "+ columnName[i]);
+        }
+
         if (mCursor != null) {
             while(mCursor.moveToNext()){
-                Log.d("iteration : ", "Itération " + i++);
 
                 item.add(mCursor.getString(COL_PRODUCT_ID));
                 item.add(mCursor.getString(COL_ARTICLE_ID));
@@ -80,12 +84,14 @@ int i=0;
                 item.add(mCursor.getString(COL_BRAND));
                 item.add(mCursor.getString(COL_WEIGHT));
                 item.add(mCursor.getString(COL_BARCODE));
+                item.add(mCursor.getString(COL_IMAGE));
                 item.add(mCursor.getString(COL_STOCK_NAME));
 
                 addItem(createArticleItem(
                         item.get(I_COL_PRODUCT_ID),
                         item.get(I_COL_ARTICLE_NAME),
                         item.get(I_COL_QUANTITE),
+                        item.get(I_COL_IMAGE),
                         item
                 ));
                 item.clear();
@@ -100,8 +106,8 @@ int i=0;
         ITEM_MAP.put(item.id, item);
     }
 
-    private static ArticleItem createArticleItem(String id, String article_name, String quantite, List<String> details) {
-        return new ArticleItem(id, article_name, quantite, makeDetails(article_name, quantite, details));
+    private static ArticleItem createArticleItem(String id, String article_name, String quantite, String url_image, List<String> details) {
+        return new ArticleItem(id, article_name, quantite, url_image, makeDetails(article_name, quantite, details));
     }
 
     private static String makeDetails(String article_name, String quantite, List<String> details) {
@@ -111,10 +117,7 @@ int i=0;
         builder.append("\nMarque : ").append(details.get(I_COL_BRAND));
         builder.append("\nPoids : ").append(details.get(I_COL_WEIGHT));
         builder.append("\nQuantité : ").append(details.get(I_COL_QUANTITE));
-
-        Date date_limite = new Date(Long.parseLong(details.get(I_COL_DATE_LIMITE)));
-
-        builder.append("\nDate de péremption : ").append(date_limite.toString());
+        builder.append("\nDate de péremption : ").append(details.get(I_COL_DATE_LIMITE));
         builder.append("\nCodeBarre : ").append(details.get(I_COL_BARCODE));
         builder.append("\n\nStocké dans : ").append(details.get(I_COL_STOCK_NAME));
 
@@ -129,12 +132,14 @@ int i=0;
         public final String content;
         public final String quantite;
         public final String details;
+        public final String url_image;
 
-        public ArticleItem(String id, String article_name, String quantite, String details) {
+        public ArticleItem(String id, String article_name, String quantite, String url_image, String details) {
             this.id = id;
             this.content = article_name;
             this.quantite = quantite;
             this.details = details;
+            this.url_image = url_image;
         }
 
         @Override

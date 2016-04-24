@@ -34,4 +34,11 @@
         android:id="@+id/activity_add_button"
         android:layout_gravity="center_horizontal" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/scan_barcode"/>
+
 </LinearLayout>

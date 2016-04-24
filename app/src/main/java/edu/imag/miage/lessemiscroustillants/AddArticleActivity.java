@@ -35,37 +35,24 @@ public class AddArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        //final EditText barcode = (EditText) findViewById(R.id.add_ref_codebarre);
+        final EditText barcode = (EditText) findViewById(R.id.add_ref_codebarre);
 
         final Button button = (Button) findViewById(R.id.activity_add_button);
+        final Button buttonScan = (Button) findViewById(R.id.scan_barcode);
 
 
         assert button != null;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (barcode.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(AddArticleActivity.this, R.string.mandatory_message, Toast.LENGTH_LONG).show();
-                } else {
+                addArticle(barcode.getText().toString());
+            }
+        });
 
-                    Cursor mCursor = MyApplication.getAppContext().getContentResolver().query(
-                            ArticleContract.ArticleEntry.CONTENT_URI,
-                            new String[]{ArticleContract.ArticleEntry.COLUMN_ARTICLE_NAME},
-                            ArticleContract.ArticleEntry.COLUMN_BARCODE + " = ?",
-                            new String[]{barcode.getText().toString()},
-                            null);
-
-                    if (mCursor.moveToFirst()) {
-                        int articleNameIndex = mCursor.getColumnIndex(ArticleContract.ArticleEntry.COLUMN_ARTICLE_NAME);
-                        String articleName = mCursor.getString(articleNameIndex);
-                        Intent intent = new Intent(AddArticleActivity.this, AddProductActivity.class)
-                                .putExtra("name_article", articleName);
-                        startActivity(intent);
-                    } else {
-                        Log.d("Barcode : ", barcode.getText().toString());
-                        addArticle(barcode.getText().toString());
-                    }
-                }*/
+        assert buttonScan != null;
+        buttonScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 IntentIntegrator scanIntegrator = new IntentIntegrator(AddArticleActivity.this);
                 scanIntegrator.initiateScan();
             }
@@ -93,7 +80,6 @@ public class AddArticleActivity extends AppCompatActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        Log.d("AddArticle : ", "scanningresult --> " + scanningResult);
 
         if (scanningResult != null) {
             String barcode = scanningResult.getContents();
